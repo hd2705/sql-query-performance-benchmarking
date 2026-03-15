@@ -1,0 +1,54 @@
+Query 1: Show the name of all people who were born before 1975 whose most recent earning is more than $130,000.
+SELECT P.PersonName, E.EarningsYear, E.Earnings
+FROM Persons P
+JOIN Earnings E ON P.PersonID = E.PersonID
+WHERE P.BirthDate < '1975-01-01' AND E.Earnings > 130000;
+
+Query 2: Show the names and school names of all people who made more than $400,000 at any point in their career, who are not active.
+SELECT P.PersonName, S.SchoolName, E.Earnings
+FROM Persons P
+JOIN Earnings E ON P.PersonID = E.PersonID
+JOIN Jobs J ON E.JobID = J.JobID
+JOIN Departments D ON J.DepartmentID = D.DepartmentID
+JOIN Schools S ON D.SchoolID = S.SchoolID
+WHERE E.Earnings > 400000 AND E.StillWorking = FALSE;
+
+Query 3: Show the names of all people who worked at the University of Texas as Lecturers who are not active as of now.
+SELECT P.PersonName
+FROM Persons P
+JOIN Earnings E ON P.PersonID = E.PersonID
+JOIN Jobs J ON E.JobID = J.JobID
+JOIN Departments D ON J.DepartmentID = D.DepartmentID
+JOIN Schools S ON D.SchoolID = S.SchoolID
+WHERE S.SchoolName = 'University of Texas' AND J.JobTitle = 'Lecturer' AND E.StillWorking = FALSE;
+
+Query 4: Show the University and campus pair that has the most number of active faculty members.
+SELECT S.SchoolName, S.SchoolCampus, COUNT(*) AS ActiveFaculty
+FROM Earnings E
+JOIN Jobs J ON E.JobID = J.JobID
+JOIN Departments D ON J.DepartmentID = D.DepartmentID
+JOIN Schools S ON D.SchoolID = S.SchoolID
+WHERE E.StillWorking = TRUE
+GROUP BY S.SchoolName, S.SchoolCampus
+ORDER BY ActiveFaculty DESC
+LIMIT 1;
+
+Query 5: Search for your own name, job title, department name, school name, and most recent earnings.
+SELECT P.PersonName, J.JobTitle, D.DepartmentName, S.SchoolName, MAX(E.Earnings) AS MostRecentEarning
+FROM Persons P
+JOIN Earnings E ON P.PersonID = E.PersonID
+JOIN Jobs J ON E.JobID = J.JobID
+JOIN Departments D ON J.DepartmentID = D.DepartmentID
+JOIN Schools S ON D.SchoolID = S.SchoolID
+WHERE P.PersonName = 'Hrushitha DARNA'
+GROUP BY P.PersonName, J.JobTitle, D.DepartmentName, S.SchoolName;
+
+Query 6: Show the department name that has the highest average earnings compared to other departments.
+SELECT D.DepartmentName, AVG(E.Earnings) AS AvgEarnings
+FROM Earnings E
+JOIN Jobs J ON E.JobID = J.JobID
+JOIN Departments D ON J.DepartmentID = D.DepartmentID
+GROUP BY D.DepartmentName
+ORDER BY AvgEarnings DESC
+LIMIT 1;
+
